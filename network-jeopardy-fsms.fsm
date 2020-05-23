@@ -1,0 +1,635 @@
+<!DOCTYPE FSM>
+<FSM>
+    <statemachine>
+        <name></name>
+        <comment></comment>
+        <initialstate>CATEGORY_SELECTED</initialstate>
+        <event>
+            <name>CM_ANSWER</name>
+            <comment>Answer typed by player.
+1 field: player's answer.</comment>
+        </event>
+        <event>
+            <name>CM_CATEGORY</name>
+            <comment>Selected category announcement message.
+2 fields: category id and player id.</comment>
+        </event>
+        <event>
+            <name>CM_RING</name>
+            <comment>Telling server a player rings in.
+1 field: player id.
+
+</comment>
+        </event>
+        <event>
+            <name>CM_SUBSCRIBE</name>
+            <comment>Subscription message with player info.
+1 field: Player name.</comment>
+        </event>
+        <input>
+            <name>CM_ANSWER</name>
+            <comment>Answer typed by player.
+1 field: player's answer.</comment>
+        </input>
+        <input>
+            <name>CM_CATEGORY</name>
+            <comment>Selected category announcement message.
+2 fields: category id and player id.</comment>
+        </input>
+        <input>
+            <name>CM_RING</name>
+            <comment>Telling server a player rings in.
+1 field: player id.
+
+</comment>
+        </input>
+        <input>
+            <name>CM_SUBSCRIBE</name>
+            <comment>Subscription message with player info.
+1 field: Player name.</comment>
+        </input>
+        <output>
+            <name>SM_ANSWER</name>
+            <comment>Message carrying correct answer from server and the answer from player.
+2 fields: correct answer and answer from player.</comment>
+        </output>
+        <output>
+            <name>SM_CATEGORY</name>
+            <comment>Message carrying selected category.
+1 field: category id.</comment>
+        </output>
+        <output>
+            <name>SM_NEW_GAME</name>
+            <comment>Message to indicate start of a new game.
+Variable number of fields: #players, player names, #categories, category names, #questions in each category, points per question, default timeout (in milliseconds). Player ids are integers starting at 1, and are assigned in the order that they are listed in this message. No player can be assigned the id 0 (reserved use). Category ids are integers starting at 0, and are assigned in the order that they are listed in this message.</comment>
+        </output>
+        <output>
+            <name>SM_NEW_ROUND</name>
+            <comment>Indicates start of a new round.
+1 field: player id.
+
+</comment>
+        </output>
+        <output>
+            <name>SM_QUESTION</name>
+            <comment>Message carrying the question of current round.
+1 field: question.
+
+</comment>
+        </output>
+        <output>
+            <name>SM_RING_CLIENT</name>
+            <comment>Message carrying the id of the selected player to answer the question of this round.
+1 field: player id.
+
+</comment>
+        </output>
+        <state>
+            <name>ANSWER_SHOWN (client)</name>
+            <comment></comment>
+            <incomeactions/>
+            <outcomeactions/>
+            <transitions/>
+        </state>
+        <state>
+            <name>CATEGORY_SELECTED</name>
+            <comment></comment>
+            <incomeactions>
+                <action type="event">CM_CATEGORY</action>
+            </incomeactions>
+            <outcomeactions>
+                <action type="output">SM_QUESTION</action>
+            </outcomeactions>
+            <transitions>
+                <transition type="simple">
+                    <name>SM_QUESTION</name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>WAIT_FOR_RING</destination>
+                    <transite_destination>WAIT_FOR_RING</transite_destination>
+                    <transitionactions>
+                        <action type="output">SM_QUESTION</action>
+                    </transitionactions>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>CATEGORY_SELECTED(client)</name>
+            <comment></comment>
+            <incomeactions/>
+            <outcomeactions/>
+            <transitions>
+                <transition type="simple">
+                    <name></name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>DISPLAY_QUESTION(client)</destination>
+                    <transite_destination>DISPLAY_QUESTION(client)</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>COLLECT_SUBSCRIPTIONS</name>
+            <comment></comment>
+            <incomeactions>
+                <action type="event">CM_SUBSCRIBE</action>
+            </incomeactions>
+            <outcomeactions>
+                <action type="output">SM_NEW_GAME</action>
+            </outcomeactions>
+            <transitions>
+                <transition type="simple">
+                    <name>SM_NEW_GAME</name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>GAME_IN_PROGRESS</destination>
+                    <transite_destination>GAME_IN_PROGRESS</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>DISPLAY_QUESTION(client)</name>
+            <comment></comment>
+            <incomeactions/>
+            <outcomeactions/>
+            <transitions>
+                <transition type="simple">
+                    <name></name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>WAIT_FOR_ANSWER(client)</destination>
+                    <transite_destination>WAIT_FOR_ANSWER(client)</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>END_OF_ROUND</name>
+            <comment></comment>
+            <incomeactions>
+                <action type="event">CM_ANSWER</action>
+            </incomeactions>
+            <outcomeactions>
+                <action type="output">SM_NEW_ROUND</action>
+            </outcomeactions>
+            <transitions>
+                <transition type="simple">
+                    <name></name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>GAME_IN_PROGRESS</destination>
+                    <transite_destination>GAME_IN_PROGRESS</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>GAME_IN_PROGRESS</name>
+            <comment></comment>
+            <incomeactions>
+                <action type="output">SM_NEW_GAME</action>
+            </incomeactions>
+            <outcomeactions>
+                <action type="output">SM_NEW_ROUND</action>
+            </outcomeactions>
+            <transitions>
+                <transition type="simple">
+                    <name>SM_NEW_ROUND</name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>ROUND_IN_PROGRESS</destination>
+                    <transite_destination>ROUND_IN_PROGRESS</transite_destination>
+                    <transitionactions>
+                        <action type="output">SM_NEW_ROUND</action>
+                    </transitionactions>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>GAME_IN_PROGRESS (client)</name>
+            <comment></comment>
+            <incomeactions/>
+            <outcomeactions/>
+            <transitions>
+                <transition type="simple">
+                    <name></name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>ROUND_IN_PROGRESS(client)</destination>
+                    <transite_destination>ROUND_IN_PROGRESS(client)</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>JOINING_GAME (client)</name>
+            <comment></comment>
+            <incomeactions/>
+            <outcomeactions/>
+            <transitions>
+                <transition type="simple">
+                    <name></name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>GAME_IN_PROGRESS (client)</destination>
+                    <transite_destination>GAME_IN_PROGRESS (client)</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>ROUND_IN_PROGRESS</name>
+            <comment></comment>
+            <incomeactions>
+                <action type="output">SM_NEW_ROUND</action>
+            </incomeactions>
+            <outcomeactions>
+                <action type="event">CM_CATEGORY</action>
+            </outcomeactions>
+            <transitions>
+                <transition type="simple">
+                    <name>CM_CATEGORY</name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>CATEGORY_SELECTED</destination>
+                    <transite_destination>CATEGORY_SELECTED</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>ROUND_IN_PROGRESS(client)</name>
+            <comment></comment>
+            <incomeactions/>
+            <outcomeactions/>
+            <transitions>
+                <transition type="simple">
+                    <name></name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>CATEGORY_SELECTED(client)</destination>
+                    <transite_destination>CATEGORY_SELECTED(client)</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>WAIT_FOR_ANSWER(client)</name>
+            <comment></comment>
+            <incomeactions/>
+            <outcomeactions/>
+            <transitions>
+                <transition type="simple">
+                    <name></name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>ANSWER_SHOWN (client)</destination>
+                    <transite_destination>ANSWER_SHOWN (client)</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>WAIT_FOR_CM_ANSWER</name>
+            <comment></comment>
+            <incomeactions>
+                <action type="event">CM_RING</action>
+            </incomeactions>
+            <outcomeactions>
+                <action type="event">CM_ANSWER</action>
+            </outcomeactions>
+            <transitions>
+                <transition type="simple">
+                    <name>CM_ANSWER</name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>END_OF_ROUND</destination>
+                    <transite_destination>END_OF_ROUND</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+        <state>
+            <name>WAIT_FOR_RING</name>
+            <comment></comment>
+            <incomeactions>
+                <action type="output">SM_QUESTION</action>
+            </incomeactions>
+            <outcomeactions>
+                <action type="event">CM_RING</action>
+            </outcomeactions>
+            <transitions>
+                <transition type="simple">
+                    <name>CM_RING</name>
+                    <comment></comment>
+                    <condition></condition>
+                    <destination>WAIT_FOR_CM_ANSWER</destination>
+                    <transite_destination>WAIT_FOR_CM_ANSWER</transite_destination>
+                    <transitionactions/>
+                </transition>
+            </transitions>
+        </state>
+    </statemachine>
+    <graphics>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">ANSWER_SHOWN (client)</qstring>
+                <QPoint name="position">
+                    <int>-4535</int>
+                    <int>125</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">CATEGORY_SELECTED</qstring>
+                <QPoint name="position">
+                    <int>-3681</int>
+                    <int>-682</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">CATEGORY_SELECTED(client)</qstring>
+                <QPoint name="position">
+                    <int>-5267</int>
+                    <int>-207</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">COLLECT_SUBSCRIPTIONS</qstring>
+                <QPoint name="position">
+                    <int>-5231</int>
+                    <int>-900</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">DISPLAY_QUESTION(client)</qstring>
+                <QPoint name="position">
+                    <int>-5027</int>
+                    <int>-103</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">END_OF_ROUND</qstring>
+                <QPoint name="position">
+                    <int>-4346</int>
+                    <int>-536</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">GAME_IN_PROGRESS</qstring>
+                <QPoint name="position">
+                    <int>-4774</int>
+                    <int>-804</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">GAME_IN_PROGRESS (client)</qstring>
+                <QPoint name="position">
+                    <int>-5763</int>
+                    <int>-407</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">JOINING_GAME (client)</qstring>
+                <QPoint name="position">
+                    <int>-5942</int>
+                    <int>-518</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">ROUND_IN_PROGRESS</qstring>
+                <QPoint name="position">
+                    <int>-4244</int>
+                    <int>-759</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">ROUND_IN_PROGRESS(client)</qstring>
+                <QPoint name="position">
+                    <int>-5578</int>
+                    <int>-314</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">WAIT_FOR_ANSWER(client)</qstring>
+                <QPoint name="position">
+                    <int>-4793</int>
+                    <int>14</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">WAIT_FOR_CM_ANSWER</qstring>
+                <QPoint name="position">
+                    <int>-3633</int>
+                    <int>-370</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GStateSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GStateSaver">
+                <qstring name="stateName">WAIT_FOR_RING</qstring>
+                <QPoint name="position">
+                    <int>-3441</int>
+                    <int>-524</int>
+                </QPoint>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">CATEGORY_SELECTED</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">CATEGORY_SELECTED(client)</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">COLLECT_SUBSCRIPTIONS</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">DISPLAY_QUESTION(client)</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">END_OF_ROUND</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">GAME_IN_PROGRESS</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">GAME_IN_PROGRESS (client)</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">JOINING_GAME (client)</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">ROUND_IN_PROGRESS</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">ROUND_IN_PROGRESS(client)</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">WAIT_FOR_ANSWER(client)</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">WAIT_FOR_CM_ANSWER</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+        <class classname="GTransitionSaver">
+            <meta classname="GSaver">
+                <data classname="GSaver"/>
+            </meta>
+            <data classname="GTransitionSaver">
+                <qstring name="stateName">WAIT_FOR_RING</qstring>
+                <int name="transition">0</int>
+                <qvaluelist name="points"/>
+            </data>
+        </class>
+    </graphics>
+</FSM>
